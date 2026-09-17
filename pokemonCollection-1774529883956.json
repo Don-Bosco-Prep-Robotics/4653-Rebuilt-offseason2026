@@ -1,0 +1,34 @@
+[
+    {
+        "color": "normal",
+        "type": "rayquaza",
+        "size": "medium",
+        "name": "Rayquaza",
+        "generation": "gen3",
+        "originalSpriteSize": 64
+    },
+    {
+        "color": "normal",
+        "type": "giratina",
+        "size": "medium",
+        "name": "Giratina",
+        "generation": "gen4",
+        "originalSpriteSize": 64
+    },
+    {
+        "color": "normal",
+        "type": "lugia",
+        "size": "medium",
+        "name": "Lugia",
+        "generation": "gen2",
+        "originalSpriteSize": 64
+    },
+    {
+        "color": "normal",
+        "type": "moltres",
+        "size": "medium",
+        "name": "Moltres",
+        "generation": "gen1",
+        "originalSpriteSize": 32
+    }
+]
