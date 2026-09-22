@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.drive.SwerveDriveSubsystem;
+import yams.mechanisms.swerve.utility.SwerveInputStream;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -12,14 +14,27 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
 
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  final CommandXboxController driverXbox = new CommandXboxController(0);
+
+  private final SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
+
+  private final SwerveInputStream driveAngularVelocity =
+      swerve.getAngularVelocityStream(
+                driverXbox::getLeftY,
+                driverXbox::getLeftX,
+                () -> driverXbox.getRawAxis(4))
+            .withAllianceRelativeControl();
+
 
   public RobotContainer() {
     configureBindings();
   }
 
   private void configureBindings() {
+    swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
+
+    // Zero the gyro with Start + Back — use this if the field-relative heading drifts
+    driverXbox.start().and(driverXbox.back()).onTrue(swerve.zeroGyro());
   }
 
   // public Command getAutonomousCommand() {
