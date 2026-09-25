@@ -44,9 +44,10 @@ public class SwerveDriveSubsystem extends SubsystemBase
     SwerveParser.parse(new File(Filesystem.getDeployDirectory(), "swerve/base"));
     SwerveDriveDevices devices = SwerveParser.createSwerveDriveDevices(cfg);
     drive = devices.swerveDrive();
+     // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
     // You can also create the SwerveDrive without the ability to retrieve the devices like this.
     // drive = SwerveParser.createSwerveDrive(cfg);
-
+  
   }
 
   public SwerveInputStream getAngularVelocityStream(DoubleSupplier x, DoubleSupplier y,

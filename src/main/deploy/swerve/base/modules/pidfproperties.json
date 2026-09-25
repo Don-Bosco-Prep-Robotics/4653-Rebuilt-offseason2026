@@ -1,7 +1,7 @@
 {
   "$schema": "https://config.yagsl.com/schemas/pidfproperties.json",
   "drive": {
-    "p": 0.0020645,
+    "p": 0.00023,
     "i": 0,
     "d": 0,
     "s": 0,
