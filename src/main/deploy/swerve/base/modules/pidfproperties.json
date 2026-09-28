@@ -1,7 +1,7 @@
 {
   "$schema": "https://config.yagsl.com/schemas/pidfproperties.json",
   "drive": {
-    "p": 0.00023,
+    "p": 0.023,
     "i": 0,
     "d": 0,
     "s": 0,
@@ -9,7 +9,7 @@
     "a": 0
   },
   "angle": {
-    "p": 0.01,
+    "p": 1,
     "i": 0,
     "d": 0,
     "a": 0,

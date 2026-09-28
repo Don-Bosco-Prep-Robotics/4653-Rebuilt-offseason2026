@@ -4,9 +4,11 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.drive.SwerveDriveSubsystem;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 
   final CommandXboxController driverXbox = new CommandXboxController(0);
+  
 
   private final SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
 
@@ -34,9 +37,10 @@ public class RobotContainer {
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
 
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
-    driverXbox.start().and(driverXbox.back()).onTrue(swerve.zeroGyro());
+    driverXbox.a().onTrue(swerve.zeroGyro());
   }
 
-  // public Command getAutonomousCommand() {
-  // }
+  public Command getAutonomousCommand() {
+    return new PathPlannerAuto("Path1");
+  }
 }
