@@ -45,7 +45,6 @@ public class RobotContainer {
     driverXbox.a().onTrue(swerve.zeroGyro());
     driverXbox.b().onTrue(
       Commands.parallel(
-        shooter.runLeft(RotationsPerSecond.of(500)),
         shooter.runRight(RotationsPerSecond.of(500))
       )
     ); // may Zeus himself strike me down if this code fails

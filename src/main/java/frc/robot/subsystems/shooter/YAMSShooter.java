@@ -37,6 +37,8 @@ public class YAMSShooter extends SubsystemBase {
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40));
 
+    
+
 
     
     private SparkMax shooterLeftSpark = new SparkMax(ShooterConstants.shooterLeftMotor, MotorType.kBrushless);
@@ -49,7 +51,7 @@ public class YAMSShooter extends SubsystemBase {
     private SmartMotorController shooterRightSmartSpark = new SparkWrapper(
         shooterRightSpark, 
         DCMotor.getNEO(1), 
-        shooterMotorConfig);
+        shooterMotorConfig.withLooselyCoupledFollowers(shooterLeftSmartSpark));
     
     private final FlyWheelConfig shooterConfig = new FlyWheelConfig()
         .withDiameter(Inches.of(4))
@@ -61,7 +63,7 @@ public class YAMSShooter extends SubsystemBase {
 
     public AngularVelocity getVelocity() {return shooterLeft.getSpeed();}
 
-    public Command runLeft(AngularVelocity speed) {return shooterLeft.run(speed);}
+    //public Command runLeft(AngularVelocity speed) {return shooterLeft.run(speed);}
     public Command runRight(AngularVelocity speed) {return shooterRight.run(speed);}
 
     public void setLeftVelocitySetpoint(AngularVelocity speed) {shooterLeft.setMechanismVelocitySetpoint(speed);}
