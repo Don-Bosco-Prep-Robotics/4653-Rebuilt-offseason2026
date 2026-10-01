@@ -7,6 +7,7 @@ import java.util.Map;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import yams.mechanisms.velocity.FlyWheel;
 
 public class Flywheels extends SubsystemBase{
 
@@ -14,7 +15,7 @@ public class Flywheels extends SubsystemBase{
     private Flywheel right;
     private FlywheelsGoal goal;
 
-    public Flywheels(Flywheel left, Flywheel Right){
+    public Flywheels(Flywheel left, Flywheel right){
         this.left = left;
         this.right = right;
     }
@@ -29,6 +30,9 @@ public class Flywheels extends SubsystemBase{
                 this.stop()),
             ()->goal
             )).withName("Set Flywheel Goal");
+    }
+    public FlywheelsGoal getGoal(){
+        return this.goal;
     }
 
     public Command shoot(){

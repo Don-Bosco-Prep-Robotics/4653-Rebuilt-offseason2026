@@ -24,15 +24,18 @@ public class Flywheel extends SubsystemBase {
 
     public AngularVelocity getVelocity() {return shooter.getSpeed();}
 
-    public Flywheel(SmartMotorControllerConfig shooterMotorConfig, FlyWheelConfig shooterConfig, int sparkMaxID){
+    public Flywheel(SmartMotorControllerConfig shooterMotorConfig, FlyWheelConfig shooterConfig, int sparkMaxID, String name){
+
+        super(name);
+
         this.shooterMotorConfig = shooterMotorConfig.withSubsystem(this);
-        shooterSpark = new SparkMax(sparkMaxID, MotorType.kBrushless);
-        shooterSmartSpark = new SparkWrapper(
-            shooterSpark, 
+        this.shooterSpark = new SparkMax(sparkMaxID, MotorType.kBrushless);
+        this.shooterSmartSpark = new SparkWrapper(
+            this.shooterSpark, 
             DCMotor.getNEO(1), 
-            shooterMotorConfig);
+            this.shooterMotorConfig);
         this.shooterConfig = shooterConfig;
-        this.shooter = new FlyWheel(shooterConfig, shooterSmartSpark);
+        this.shooter = new FlyWheel(this.shooterConfig, this.shooterSmartSpark);
     }
 
     //public Command runLeft(AngularVelocity speed) {return shooterLeft.run(speed);}

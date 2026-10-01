@@ -49,8 +49,8 @@ public class SwerveDriveSubsystem extends SubsystemBase
         .withTranslationController(new PIDController(4, 0, 0))
         .withRotationController(new PIDController(1, 0, 0))
         .withTelemetry("swerve", new SwerveDriveTelemetryConfig(TelemetryVerbosity.HIGH))
-        .withMaximumChassisSpeed(MetersPerSecond.of(3), DegreesPerSecond.of(360))
-        .withGyro(() -> Degrees.of(-gyro.getAngle()));
+        .withMaximumChassisSpeed(MetersPerSecond.of(3), DegreesPerSecond.of(360));
+        // .withGyro(() -> Degrees.of(-gyro.getAngle()));
 
     SwerveParser.parse(new File(Filesystem.getDeployDirectory(), "swerve/base"));
     SwerveDriveDevices devices = SwerveParser.createSwerveDriveDevices(cfg);

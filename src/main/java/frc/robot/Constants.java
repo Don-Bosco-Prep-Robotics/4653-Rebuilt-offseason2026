@@ -5,14 +5,23 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
+
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.mechanisms.config.FlyWheelConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+import yams.motorcontrollers.local.SparkWrapper;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -30,7 +39,7 @@ public final class Constants {
 
     //LEFT FLYWHEEL
     public static final int flywheelLeftMotor = 14;
-    public final SmartMotorControllerConfig flywheelLeftMotorConfig = new SmartMotorControllerConfig()
+    public static final SmartMotorControllerConfig flywheelLeftMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.CLOSED_LOOP)
         .withClosedLoopController(0.00016541, 0, 0)
         .withSimClosedLoopController(0.00016541, 0, 0)
@@ -41,10 +50,17 @@ public final class Constants {
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40));
-    
+    // public static final SparkWrapper flywheelLeftSmartSpark = new SparkWrapper(
+    //         new SparkMax(flywheelLeftMotor, MotorType.kBrushless), 
+    //         DCMotor.getNEO(1), 
+    //         flywheelLeftMotorConfig);
+    public static final FlyWheelConfig flywheelLeftConfig = new FlyWheelConfig()
+        .withDiameter(Inches.of(4))
+        .withTelemetry("FlywheelLeft", TelemetryVerbosity.HIGH);
+
     //RIGHT FLYWHEEL
     public static final int flywheelRightMotor = 13;
-    public final SmartMotorControllerConfig flywheelRightMotorConfig = new SmartMotorControllerConfig()
+    public static final SmartMotorControllerConfig flywheelRightMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.CLOSED_LOOP)
         .withClosedLoopController(0.00016541, 0, 0)
         .withSimClosedLoopController(0.00016541, 0, 0)
@@ -55,6 +71,31 @@ public final class Constants {
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40));
+    // public static final SparkWrapper flywheelRightSmartSpark = new SparkWrapper(
+    //         new SparkMax(flywheelRightMotor, MotorType.kBrushless), 
+    //         DCMotor.getNEO(1), 
+    //         flywheelRightMotorConfig);
+    public static final FlyWheelConfig flywheelRightConfig = new FlyWheelConfig()
+        .withDiameter(Inches.of(4))
+        .withTelemetry("FlywheelRight", TelemetryVerbosity.HIGH);
     
   }
+  public static class IndexerConstants {
+    public static final int indexerMotor = 10;
+    public static final SmartMotorControllerConfig indexerMotorConfig = new SmartMotorControllerConfig()
+        .withControlMode(ControlMode.OPEN_LOOP)
+        .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+        .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+        .withTelemetry("Indexer Motor", TelemetryVerbosity.HIGH)
+        .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+        .withMotorInverted(false)
+        .withIdleMode(MotorMode.COAST)
+        .withStatorCurrentLimit(Amps.of(40));
+    public static final FlyWheelConfig indexerConfig = new FlyWheelConfig()
+        .withDiameter(Inches.of(4))
+        .withTelemetry("Indexer", TelemetryVerbosity.HIGH);
+
+    public static final AngularVelocity indexingSpeed = RPM.of(60);
+  }
+  
 }
