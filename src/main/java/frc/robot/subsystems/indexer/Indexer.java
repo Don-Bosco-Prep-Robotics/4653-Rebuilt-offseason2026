@@ -2,14 +2,19 @@ package frc.robot.subsystems.indexer;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import java.util.Map;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.config.FlyWheelConfig;
@@ -28,6 +33,7 @@ public class Indexer extends SubsystemBase {
     private FlyWheelConfig indexerConfig;
     private FlyWheel indexer;
 
+    @AutoLogOutput
     private IndexerGoal goal = IndexerGoal.IDLE;
 
     public Indexer() {
@@ -48,7 +54,7 @@ public class Indexer extends SubsystemBase {
     }
 
 
-    public Command setGoal(IndexerGoal goal) {
+    public Command setGoalCommand(IndexerGoal goal) {
         return Commands.runOnce(() -> this.goal = goal)
         .andThen(Commands.select(
             Map.of(
@@ -60,8 +66,22 @@ public class Indexer extends SubsystemBase {
             )).withName("Set Indexer Goal");
     }
 
+    public void setGoal(IndexerGoal goal) {
+        this.goal = goal;
+    }
+
+
+
     @Override
     public void periodic() {
+        // switch(goal){
+        //     case INDEXING -> {
+        //         Commands.runOnce(() -> indexer.run(RPM.of(15)));
+        //     }
+        //     case IDLE -> {
+        //         Commands.runOnce(() -> indexer.set(0));
+        //     }
+        // }
         indexer.updateTelemetry();
     }
 

@@ -17,6 +17,7 @@ import frc.robot.subsystems.shooter.Flywheel;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 
@@ -52,14 +53,26 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
-    superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));
+    // superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));
   }
 
   private void configureBindings() {
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
     driverXbox.a().onTrue(swerve.zeroGyro());
 
-    driverXbox.b().whileTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
+    // driverXbox
+    //   .b()
+    //     .whileTrue(
+    //       Commands.startEnd(
+    //         () -> superstructure.setGoal(Superstructure.Goal.SCORING),
+    //         () -> superstructure.setGoal(Superstructure.Goal.IDLE),
+    //         superstructure
+    //       ).withName("Start/End Scoring")
+    //   );
+
+    //this is definietely being called, not an issue
+    driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
+    driverXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
   }
 
   public Command getAutonomousCommand() {

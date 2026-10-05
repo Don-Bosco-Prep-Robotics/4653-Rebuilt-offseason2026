@@ -3,6 +3,10 @@ package frc.robot.subsystems.superstructure;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +24,8 @@ public class Superstructure extends SubsystemBase {
     public Indexer indexer;
     
     private final Map<Goal, Supplier<Command>> goalCommands;
+
+    @AutoLogOutput
     private Goal goal = Goal.IDLE;
 
     public Superstructure (
@@ -35,8 +41,8 @@ public class Superstructure extends SubsystemBase {
         goalCommands = Map.of(
             Goal.SCORING,
             () -> Commands.sequence(
-                flywheels.setGoal(FlywheelsGoal.SHOOTING),
-                this.indexer.setGoal(Indexer.IndexerGoal.INDEXING)
+                flywheels.setGoalCommand(FlywheelsGoal.SHOOTING),
+                this.indexer.setGoalCommand(Indexer.IndexerGoal.INDEXING)
             ).withName("Start Scoring"),
             Goal.COLLECTING,
             () -> Commands.sequence(
@@ -44,33 +50,41 @@ public class Superstructure extends SubsystemBase {
             ).withName("Start Collecting"),
             Goal.IDLE,
             () -> Commands.sequence(
-                flywheels.setGoal(FlywheelsGoal.IDLE),
-                this.indexer.setGoal(Indexer.IndexerGoal.IDLE)
+                flywheels.setGoalCommand(FlywheelsGoal.IDLE),
+                this.indexer.setGoalCommand(Indexer.IndexerGoal.IDLE)
             ).withName("Start Idle")
         );
 
     }
 
-    public Command setGoal(Goal goal) {
-        return Commands.runOnce(() -> this.goal = goal, this).andThen(goalCommands.get(goal).get());
+    public Command setGoal(Goal newGoal) {
+        return Commands.runOnce(() -> this.goal = newGoal)
+            .andThen(goalCommands.get(goal).get())
+            .withName("Superstructure Set Goal");
     }
 
     @Override
     public void periodic() {
-        switch (goal) {
-            case SCORING -> {
-                flywheels.setGoal(FlywheelsGoal.SHOOTING);
-                indexer.setGoal(Indexer.IndexerGoal.INDEXING);
-            }
-            case COLLECTING -> {
-                flywheels.setGoal(FlywheelsGoal.IDLE);
-                // indexer.setGoal(Indexer.IndexerGoal);
-            }
-            case IDLE -> {
-                flywheels.setGoal(FlywheelsGoal.IDLE);
-                indexer.setGoal(Indexer.IndexerGoal.IDLE);
-        }
-    }}
+        // switch (this.goal) {
+        //     case SCORING -> {
+        //         flywheels.setGoal(FlywheelsGoal.SHOOTING);
+        //         indexer.setGoal(Indexer.IndexerGoal.INDEXING);
+        //     }
+        //     case COLLECTING -> {
+        //         flywheels.setGoal(FlywheelsGoal.IDLE);
+        //         // indexer.setGoal(Indexer.IndexerGoal);
+        //     }
+        //     case IDLE -> {
+        //         flywheels.setGoal(FlywheelsGoal.IDLE);
+        //         indexer.setGoal(Indexer.IndexerGoal.IDLE);
+        // }
+        // }
+        Logger.recordOutput(
+                "Superstructure/Current Command",
+                this.getCurrentCommand() == null
+                        ? "None"
+                        : this.getCurrentCommand().getName());
+    }
 
 
     public static enum Goal {
