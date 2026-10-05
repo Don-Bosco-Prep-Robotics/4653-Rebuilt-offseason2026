@@ -1,0 +1,271 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: Optional notes to append to the generated release notes
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  java-tests:
+    name: Java Tests
+    timeout-minutes: 10
+    runs-on: ubuntu-22.04
+    container: wpilib/roborio-cross-ubuntu:2025-22.04
+    env:
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-home
+    outputs:
+      artifact_name: ${{ steps.package.outputs.artifact_name }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Add repository to Git safe directories
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Set up Gradle dependency cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Compile robot code and run tests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in 1 2 3; do
+            echo "Gradle build attempt $attempt of 3..."
+
+            if ./gradlew build --no-daemon; then
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error::Gradle build failed after 3 attempts."
+              exit 1
+            fi
+
+            delay=$((attempt * 20))
+            echo "::warning::Build failed, likely while downloading a vendor dependency. Retrying in ${delay}s..."
+            sleep "$delay"
+          done
+
+      - name: Package Robot Artifact
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          shopt -s nullglob
+          JAR_FILES=(build/libs/*.jar)
+          if [ "${#JAR_FILES[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one deployable JAR in build/libs, found ${#JAR_FILES[@]}."
+            exit 1
+          fi
+
+          SAFE_BRANCH=$(printf '%s' "$GITHUB_REF_NAME" | sed -E 's/[^A-Za-z0-9._-]+/-/g; s/^-+//; s/-+$//')
+          if [ -z "$SAFE_BRANCH" ]; then
+            SAFE_BRANCH="selected-ref"
+          fi
+
+          SHORT_SHA="${GITHUB_SHA::7}"
+          ARTIFACT_NAME="robotics2026-${SAFE_BRANCH}-${SHORT_SHA}"
+          PACKAGE_DIR="build/ci-artifacts/$ARTIFACT_NAME"
+
+          mkdir -p "$PACKAGE_DIR"
+          cp "${JAR_FILES[0]}" "$PACKAGE_DIR/"
+
+          if [ -d src/main/deploy ]; then
+            mkdir -p "$PACKAGE_DIR/deploy"
+            cp -R src/main/deploy/. "$PACKAGE_DIR/deploy/"
+          fi
+
+          cat > "$PACKAGE_DIR/deploy-artifact.sh" <<'DEPLOY_SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          if [ "$#" -lt 1 ]; then
+            echo "Usage: ./deploy-artifact.sh <team-number> [roborio-host]"
+            echo "Example: ./deploy-artifact.sh 4653"
+            exit 1
+          fi
+
+          TEAM="$1"
+          ROBORIO="${2:-roborio-${TEAM}-FRC.local}"
+          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          JAR_PATH="$(find "$SCRIPT_DIR" -maxdepth 1 -name '*.jar' | head -n 1)"
+
+          if [ -z "$JAR_PATH" ]; then
+            echo "No robot JAR found next to this script."
+            exit 1
+          fi
+
+          echo "Deploying $(basename "$JAR_PATH") to $ROBORIO..."
+          ssh "admin@$ROBORIO" "mkdir -p /home/lvuser/deploy"
+          scp "$JAR_PATH" "admin@$ROBORIO:/home/lvuser/FRCUserProgram.jar"
+
+          if [ -d "$SCRIPT_DIR/deploy" ]; then
+            scp -r "$SCRIPT_DIR/deploy/." "admin@$ROBORIO:/home/lvuser/deploy/"
+          fi
+
+          ssh "admin@$ROBORIO" 'sync; if [ -x /usr/local/frc/bin/frcRunRobot.sh ]; then /usr/local/frc/bin/frcRunRobot.sh restart; else /sbin/reboot; fi'
+          echo "Deploy complete."
+          DEPLOY_SH
+
+          cat > "$PACKAGE_DIR/deploy-artifact.ps1" <<'DEPLOY_PS1'
+          param(
+              [Parameter(Mandatory = $true)]
+              [string]$TeamNumber,
+
+              [string]$RoboRio = "roborio-$TeamNumber-FRC.local"
+          )
+
+          $ErrorActionPreference = "Stop"
+          $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+          $Jar = Get-ChildItem -Path $ScriptDir -Filter "*.jar" | Select-Object -First 1
+
+          if ($null -eq $Jar) {
+              throw "No robot JAR found next to this script."
+          }
+
+          Write-Host "Deploying $($Jar.Name) to $RoboRio..."
+          ssh "admin@$RoboRio" "mkdir -p /home/lvuser/deploy"
+          scp $Jar.FullName "admin@${RoboRio}:/home/lvuser/FRCUserProgram.jar"
+
+          $DeployDir = Join-Path $ScriptDir "deploy"
+          if (Test-Path $DeployDir) {
+              scp -r "$DeployDir/*" "admin@${RoboRio}:/home/lvuser/deploy/"
+          }
+
+          ssh "admin@$RoboRio" "sync; if [ -x /usr/local/frc/bin/frcRunRobot.sh ]; then /usr/local/frc/bin/frcRunRobot.sh restart; else /sbin/reboot; fi"
+          Write-Host "Deploy complete."
+          DEPLOY_PS1
+
+          cat > "$PACKAGE_DIR/README_DEPLOY.txt" <<'DEPLOY_README'
+          Robot artifact deploy helper
+          ============================
+
+          The included JAR is the Gradle-built fat JAR. Its Java, WPILib, and
+          vendor runtime dependencies are bundled inside it.
+
+          Disable the robot before deploying.
+
+          macOS, Linux, or Git Bash:
+            ./deploy-artifact.sh <team-number>
+
+          Windows PowerShell:
+            .\deploy-artifact.ps1 -TeamNumber <team-number>
+
+          Both scripts copy the robot JAR to /home/lvuser/FRCUserProgram.jar,
+          copy the deploy directory to /home/lvuser/deploy, then restart robot
+          code or reboot the roboRIO if the restart helper is unavailable.
+          DEPLOY_README
+
+          chmod +x "$PACKAGE_DIR/deploy-artifact.sh"
+          (
+            cd "$PACKAGE_DIR"
+            sha256sum ./*.jar > SHA256SUMS.txt
+          )
+
+          {
+            echo "artifact=$ARTIFACT_NAME"
+            echo "branch=$GITHUB_REF_NAME"
+            echo "commit=$GITHUB_SHA"
+            echo "run_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > "$PACKAGE_DIR/build-info.txt"
+
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_path=$PACKAGE_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Robot Artifact
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.package.outputs.artifact_name }}
+          path: ${{ steps.package.outputs.artifact_path }}
+          if-no-files-found: error
+          retention-days: 90
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: java-tests
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download tested release package
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.java-tests.outputs.artifact_name }}
+          path: release-artifact
+
+      - name: Create ZIP and publish exact selected commit
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: ${{ needs.java-tests.outputs.artifact_name }}
+          RELEASE_NOTES_INPUT: ${{ inputs.release_notes }}
+        run: |
+          set -euo pipefail
+
+          SAFE_REF=$(printf '%s' "$GITHUB_REF_NAME" | sed -E 's/[^A-Za-z0-9._-]+/-/g; s/^-+//; s/-+$//')
+          if [ -z "$SAFE_REF" ]; then
+            SAFE_REF="selected-ref"
+          fi
+          SHORT_SHA="${GITHUB_SHA::7}"
+
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            TAG="main-build-${GITHUB_RUN_NUMBER}-${SHORT_SHA}"
+            TITLE="Main Build ${GITHUB_RUN_NUMBER} - ${SHORT_SHA}"
+            RELEASE_FLAGS=(--latest)
+            RELEASE_TYPE="stable main build"
+          else
+            TAG="preview-${SAFE_REF}-${SHORT_SHA}"
+            TITLE="Preview: ${GITHUB_REF_NAME} @ ${SHORT_SHA}"
+            RELEASE_FLAGS=(--prerelease --latest=false)
+            RELEASE_TYPE="preview build"
+          fi
+          ZIP_PATH="${ARTIFACT_NAME}.zip"
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Release $TAG already exists; refusing to overwrite it."
+            exit 1
+          fi
+
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists; refusing to move or overwrite it."
+            exit 1
+          fi
+
+          (
+            cd release-artifact
+            zip -r "../$ZIP_PATH" .
+          )
+
+          {
+            echo "Source ref: $GITHUB_REF_NAME"
+            echo "Commit: $GITHUB_SHA"
+            echo "Type: $RELEASE_TYPE"
+            echo
+            echo "This package was compiled and tested by GitHub Actions before release."
+            if [ -n "$RELEASE_NOTES_INPUT" ]; then
+              echo
+              echo "Additional notes:"
+              echo "$RELEASE_NOTES_INPUT"
+            fi
+          } > release-notes.txt
+
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$TITLE" --notes-file release-notes.txt "${RELEASE_FLAGS[@]}" "$ZIP_PATH#Robot release package"
