@@ -58,8 +58,8 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command setGoal(Goal newGoal) {
-        return Commands.runOnce(() -> this.goal = newGoal)
-            .andThen(goalCommands.get(goal).get())
+        return Commands.runOnce(() -> this.goal = newGoal, this)
+            .andThen(goalCommands.get(newGoal).get())
             .withName("Superstructure Set Goal");
     }
 
