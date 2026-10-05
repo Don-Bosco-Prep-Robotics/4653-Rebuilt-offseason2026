@@ -13,7 +13,7 @@ public class Flywheels extends SubsystemBase{
 
     private Flywheel left;
     private Flywheel right;
-    private FlywheelsGoal goal;
+    private FlywheelsGoal goal = FlywheelsGoal.IDLE;
 
     public Flywheels(Flywheel left, Flywheel right){
         this.left = left;
@@ -39,7 +39,7 @@ public class Flywheels extends SubsystemBase{
         return left.run(RPM.of(15)).alongWith(right.run(RPM.of(15)));
     }
     public Command stop(){
-        return left.run(RPM.of(15)).alongWith(right.run(RPM.of(15)));
+        return left.run(RPM.of(0)).alongWith(right.run(RPM.of(0)));
     }
 
     public enum FlywheelsGoal {

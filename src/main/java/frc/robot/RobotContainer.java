@@ -51,16 +51,15 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+    swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
+    superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));
   }
 
   private void configureBindings() {
-    swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
-    superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));
-
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
     driverXbox.a().onTrue(swerve.zeroGyro());
-    driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
 
+    driverXbox.b().whileTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
   }
 
   public Command getAutonomousCommand() {

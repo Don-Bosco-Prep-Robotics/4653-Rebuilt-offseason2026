@@ -81,7 +81,7 @@ public final class Constants {
     
   }
   public static class IndexerConstants {
-    public static final int indexerMotor = 10;
+    public static final int indexerMotor = 20;
     public static final SmartMotorControllerConfig indexerMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.OPEN_LOOP)
         .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))

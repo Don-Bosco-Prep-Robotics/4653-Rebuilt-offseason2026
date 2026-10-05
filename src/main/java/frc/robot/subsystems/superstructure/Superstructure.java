@@ -36,7 +36,7 @@ public class Superstructure extends SubsystemBase {
             Goal.SCORING,
             () -> Commands.sequence(
                 flywheels.setGoal(FlywheelsGoal.SHOOTING),
-                indexer.setGoal(Indexer.IndexerGoal.INDEXING)
+                this.indexer.setGoal(Indexer.IndexerGoal.INDEXING)
             ).withName("Start Scoring"),
             Goal.COLLECTING,
             () -> Commands.sequence(
@@ -45,7 +45,7 @@ public class Superstructure extends SubsystemBase {
             Goal.IDLE,
             () -> Commands.sequence(
                 flywheels.setGoal(FlywheelsGoal.IDLE),
-                indexer.setGoal(Indexer.IndexerGoal.IDLE)
+                this.indexer.setGoal(Indexer.IndexerGoal.IDLE)
             ).withName("Start Idle")
         );
 
@@ -57,8 +57,20 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-    }
+        switch (goal) {
+            case SCORING -> {
+                flywheels.setGoal(FlywheelsGoal.SHOOTING);
+                indexer.setGoal(Indexer.IndexerGoal.INDEXING);
+            }
+            case COLLECTING -> {
+                flywheels.setGoal(FlywheelsGoal.IDLE);
+                // indexer.setGoal(Indexer.IndexerGoal);
+            }
+            case IDLE -> {
+                flywheels.setGoal(FlywheelsGoal.IDLE);
+                indexer.setGoal(Indexer.IndexerGoal.IDLE);
+        }
+    }}
 
 
     public static enum Goal {
@@ -66,4 +78,5 @@ public class Superstructure extends SubsystemBase {
         COLLECTING,
         IDLE
     }
+    
 }
