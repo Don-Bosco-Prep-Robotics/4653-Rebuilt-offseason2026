@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
 
@@ -16,6 +17,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -91,7 +93,7 @@ public final class Constants {
         .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withTelemetry("Indexer Motor", TelemetryVerbosity.HIGH)
-        .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+        .withGearing(new MechanismGearing(GearBox.fromReductionStages(4, 1)))
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40));
@@ -99,7 +101,40 @@ public final class Constants {
         .withDiameter(Inches.of(4))
         .withTelemetry("Indexer", TelemetryVerbosity.HIGH);
 
-    public static final AngularVelocity indexingSpeed = RPM.of(10);
+    public static final AngularVelocity indexingSpeed = RPM.of(30);
   }
-  
+  public static class IntakeConstants {
+    public static final int intakeFrameMotor = 21;
+    public static final int intakeRollerMotor = 22;
+
+    public static final SmartMotorControllerConfig intakeFrameMotorConfig = new SmartMotorControllerConfig()
+        .withControlMode(ControlMode.CLOSED_LOOP)
+        .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withTelemetry("Intake Frame Motor", TelemetryVerbosity.HIGH)
+        .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 3, 3, 1)))
+        .withMotorInverted(false)
+        .withIdleMode(MotorMode.COAST)
+        .withStatorCurrentLimit(Amps.of(40))
+        .withSoftLimits(Degrees.of(0), Degrees.of(90));
+
+    public static final ArmConfig intakeFrameConfig = new ArmConfig()
+        .withLength(Inches.of(15))
+        .withTelemetry("Intake Frame", TelemetryVerbosity.HIGH);
+
+    public static final SmartMotorControllerConfig intakeRollerMotorConfig = new SmartMotorControllerConfig()
+        .withControlMode(ControlMode.CLOSED_LOOP)
+        .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withTelemetry("Intake Roller Motor", TelemetryVerbosity.HIGH)
+        .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+        .withMotorInverted(false)
+        .withIdleMode(MotorMode.COAST)
+        .withStatorCurrentLimit(Amps.of(40));
+    public static final FlyWheelConfig intakeRollerConfig = new FlyWheelConfig()
+        .withDiameter(Inches.of(4))
+        .withTelemetry("Intake Roller", TelemetryVerbosity.HIGH);
+
+    public static final AngularVelocity intakeRollerSpeed = RPM.of(10);
+  }
 }

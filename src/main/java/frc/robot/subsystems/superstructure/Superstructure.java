@@ -45,7 +45,7 @@ public class Superstructure extends SubsystemBase {
                 flywheels.setGoalCommand(FlywheelsGoal.SHOOTING),
                 indexer.setGoalCommand(IndexerGoal.INDEXING)
             ).withName("Start Scoring"),
-            Goal.COLLECTING,
+            Goal.INTAKING,
             () -> Commands.parallel(
 
             ).withName("Start Collecting"),
@@ -76,7 +76,8 @@ public class Superstructure extends SubsystemBase {
 
     public static enum Goal {
         SCORING,
-        COLLECTING,
+        INTAKING,
+        OUTTAKING,
         IDLE
     }
     
