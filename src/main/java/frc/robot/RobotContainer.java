@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.drive.SwerveDriveSubsystem;
-import frc.robot.subsystems.shooter.YAMSShooter;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.superstructure.Superstructure;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
-
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import yams.mechanisms.velocity.FlyWheel;
+import frc.robot.subsystems.shooter.Flywheel;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -24,7 +27,20 @@ public class RobotContainer {
   
 
   private final SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
-  private final YAMSShooter shooter = new YAMSShooter();
+  private final Intake intake = new Intake();
+  private final Indexer indexer = new Indexer();
+  // private final Superstructure superstructure = new Superstructure(
+  //   new FlyWheel(ShooterConstants.flywheelLeftConfig, ShooterConstants.flywheelLeftSmartSpark),
+  //   new FlyWheel(ShooterConstants.flywheelRightConfig, ShooterConstants.flywheelRightSmartSpark),
+  //   intake,
+  //   indexer);
+  private final Superstructure superstructure = new Superstructure(
+    new Flywheel(ShooterConstants.flywheelLeftMotorConfig, ShooterConstants.flywheelLeftConfig, ShooterConstants.flywheelLeftMotor, "LeftFlywheel"),
+    new Flywheel(ShooterConstants.flywheelRightMotorConfig, ShooterConstants.flywheelRightConfig, ShooterConstants.flywheelRightMotor, "RightFlywheel"),
+    intake,
+    indexer);
+  // private final Flywheel flywheelLeft = new Flywheel(ShooterConstants.flywheelLeftMotorConfig, ShooterConstants.flywheelLeftConfig, ShooterConstants.flywheelLeftMotor, "LeftFlywheel");
+  // private final Flywheel flywheelRight = new Flywheel(ShooterConstants.flywheelRightMotorConfig, ShooterConstants.flywheelRightConfig, ShooterConstants.flywheelRightMotor, "RightFlywheel");
 
   private final SwerveInputStream driveAngularVelocity =
       swerve.getAngularVelocityStream(
@@ -36,18 +52,27 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+    swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
+    // superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));
   }
 
   private void configureBindings() {
-    swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
-
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
     driverXbox.a().onTrue(swerve.zeroGyro());
-    driverXbox.b().onTrue(
-      Commands.parallel(
-        shooter.runRight(RotationsPerSecond.of(500))
-      )
-    ); // may Zeus himself strike me down if this code fails
+
+    // driverXbox
+    //   .b()
+    //     .whileTrue(
+    //       Commands.startEnd(
+    //         () -> superstructure.setGoal(Superstructure.Goal.SCORING),
+    //         () -> superstructure.setGoal(Superstructure.Goal.IDLE),
+    //         superstructure
+    //       ).withName("Start/End Scoring")
+    //   );
+
+    //this is definietely being called, not an issue
+    driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
+    driverXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
   }
 
   public Command getAutonomousCommand() {
