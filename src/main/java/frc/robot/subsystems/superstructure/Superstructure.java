@@ -15,6 +15,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Flywheels;
 import frc.robot.subsystems.shooter.Flywheels.FlywheelsGoal;
+import frc.robot.subsystems.indexer.Indexer.IndexerGoal;
 import yams.mechanisms.velocity.FlyWheel;
 
 public class Superstructure extends SubsystemBase {
@@ -32,17 +33,17 @@ public class Superstructure extends SubsystemBase {
         Flywheel flywheelLeft,
         Flywheel flywheelRight,
         Intake intake,
-        Indexer indexer
+        Indexer inputIndexer
     ){
         this.flywheels = new Flywheels(flywheelLeft, flywheelRight);
         this.intake = intake;
-        this.indexer = indexer;
+        this.indexer = inputIndexer;
 
         goalCommands = Map.of(
             Goal.SCORING,
             () -> Commands.sequence(
                 flywheels.setGoalCommand(FlywheelsGoal.SHOOTING),
-                this.indexer.setGoalCommand(Indexer.IndexerGoal.INDEXING)
+                indexer.setGoalCommand(IndexerGoal.INDEXING)
             ).withName("Start Scoring"),
             Goal.COLLECTING,
             () -> Commands.sequence(
@@ -51,7 +52,7 @@ public class Superstructure extends SubsystemBase {
             Goal.IDLE,
             () -> Commands.sequence(
                 flywheels.setGoalCommand(FlywheelsGoal.IDLE),
-                this.indexer.setGoalCommand(Indexer.IndexerGoal.IDLE)
+                indexer.setGoalCommand(IndexerGoal.IDLE)
             ).withName("Start Idle")
         );
 
@@ -65,20 +66,6 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // switch (this.goal) {
-        //     case SCORING -> {
-        //         flywheels.setGoal(FlywheelsGoal.SHOOTING);
-        //         indexer.setGoal(Indexer.IndexerGoal.INDEXING);
-        //     }
-        //     case COLLECTING -> {
-        //         flywheels.setGoal(FlywheelsGoal.IDLE);
-        //         // indexer.setGoal(Indexer.IndexerGoal);
-        //     }
-        //     case IDLE -> {
-        //         flywheels.setGoal(FlywheelsGoal.IDLE);
-        //         indexer.setGoal(Indexer.IndexerGoal.IDLE);
-        // }
-        // }
         Logger.recordOutput(
                 "Superstructure/Current Command",
                 this.getCurrentCommand() == null

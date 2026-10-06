@@ -37,6 +37,8 @@ public final class Constants {
   }
   public static class ShooterConstants {
 
+    //TODO - Figure out why the livetuning doesn't appear to make a difference
+    //TODO - Figure out why the flyWheelLeft Values are showing up as 1 on the tuner
     //LEFT FLYWHEEL
     public static final int flywheelLeftMotor = 14;
     public static final SmartMotorControllerConfig flywheelLeftMotorConfig = new SmartMotorControllerConfig()
@@ -68,7 +70,7 @@ public final class Constants {
         .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
         .withTelemetry("FlywheelRight Motor", TelemetryVerbosity.HIGH)
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1.17)))
-        .withMotorInverted(false)
+        .withMotorInverted(true)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40));
     // public static final SparkWrapper flywheelRightSmartSpark = new SparkWrapper(
@@ -82,10 +84,12 @@ public final class Constants {
   }
   public static class IndexerConstants {
     public static final int indexerMotor = 20;
+
+    //TODO - Figure out why this isn't turning at all - SOLVED - duplicate CAN ID with the REVPD
     public static final SmartMotorControllerConfig indexerMotorConfig = new SmartMotorControllerConfig()
-        .withControlMode(ControlMode.OPEN_LOOP)
-        .withFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
-        .withSimFeedforward(new SimpleMotorFeedforward(0.27937, 0.089836, 0.014557))
+        .withControlMode(ControlMode.CLOSED_LOOP)
+        .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withTelemetry("Indexer Motor", TelemetryVerbosity.HIGH)
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
         .withMotorInverted(false)
@@ -95,7 +99,7 @@ public final class Constants {
         .withDiameter(Inches.of(4))
         .withTelemetry("Indexer", TelemetryVerbosity.HIGH);
 
-    public static final AngularVelocity indexingSpeed = RPM.of(60);
+    public static final AngularVelocity indexingSpeed = RPM.of(10);
   }
   
 }

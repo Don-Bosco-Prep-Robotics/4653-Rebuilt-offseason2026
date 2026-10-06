@@ -45,7 +45,7 @@ public class Flywheels extends SubsystemBase{
     }
 
     public Command shoot(){
-        return left.run(RPM.of(15)).alongWith(right.run(RPM.of(15)));
+        return left.run(RPM.of(100)).alongWith(right.run(RPM.of(100)));
     }
     public Command stop(){
         return left.set(0).alongWith(right.set(0));
