@@ -1,5 +1,9 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import java.util.Map;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -39,42 +43,53 @@ public class Intake extends SubsystemBase {
     
     public Intake(){
         //Intake Roller
-        // intakeRollerMotorController =IntakeConstants.intakeRollerMotorConfig.withSubsystem(this);
-        // intakeRollerSpark = new SparkMax(IntakeConstants.intakeRollerMotor, MotorType.kBrushless);
-        // intakeRollerMotor = new SparkWrapper(
-        //     intakeRollerSpark,
-        //     DCMotor.getNEO(1), 
-        //     intakeFrameMotorController);
-        // intakeRollerConfig = IntakeConstants.intakeRollerConfig;
-        // intakeRoller = new FlyWheel(intakeRollerConfig, intakeRollerMotor);
+        intakeRollerMotorController =IntakeConstants.intakeRollerMotorConfig.withSubsystem(this);
+        intakeRollerSpark = new SparkMax(IntakeConstants.intakeRollerMotor, MotorType.kBrushless);
+        intakeRollerMotor = new SparkWrapper(
+            intakeRollerSpark,
+            DCMotor.getNEO(1), 
+            intakeRollerMotorController);
+        intakeRollerConfig = IntakeConstants.intakeRollerConfig;
+        intakeRoller = new FlyWheel(intakeRollerConfig, intakeRollerMotor);
 
-        // //Intake Frame
-        // intakeFrameMotorController = IntakeConstants.intakeFrameMotorConfig.withSubsystem(this);
-        // intakeFrameSpark = new SparkMax(IntakeConstants.intakeFrameMotor, MotorType.kBrushless);
-        // intakeFrameMotor = new SparkWrapper(
-        //     intakeFrameSpark,
-        //     DCMotor.getNEO(1),
-        //     intakeFrameMotorController);
-        // intakeFrameConfig = IntakeConstants.intakeFrameConfig;
-        // intakeFrame = new Arm(intakeFrameConfig, intakeFrameMotor);
+        //Intake Frame
+        intakeFrameMotorController = IntakeConstants.intakeFrameMotorConfig.withSubsystem(this);
+        intakeFrameSpark = new SparkMax(IntakeConstants.intakeFrameMotor, MotorType.kBrushless);
+        intakeFrameMotor = new SparkWrapper(
+            intakeFrameSpark,
+            DCMotor.getNEO(1),
+            intakeFrameMotorController);
+        intakeFrameConfig = IntakeConstants.intakeFrameConfig;
+        intakeFrame = new Arm(intakeFrameConfig, intakeFrameMotor);
     } 
 
-    // public Command setGoalCommand(IntakeGoal goal) {
-    //     return Commands.runOnce(() -> this.goal = goal)
-    //     .andThen(Commands.select(
-    //         Map.of(
-    //             IntakeGoal.INTAKING,
-    //             () -> Commands.parallel(
-    //                 intakeFrame.runTo(),
-    //                 intakeRoller.run(RPM.of())
-    //             )),
-    //         () -> goal
-    //         )).withName("Set Indexer Goal");
-    // }
+    public Command setGoalCommand(IntakeGoal goal) {
+        return Commands.runOnce(() -> this.goal = goal)
+            .andThen(Commands.select(
+                Map.of(
+                    IntakeGoal.INTAKING,
+                    Commands.parallel(
+                        intakeFrame.runTo(Degrees.of(90), Degrees.of(5)),
+                        intakeRoller.run(RPM.of(15))
+                    ),
+                    IntakeGoal.IDLE,
+                    Commands.parallel(
+                        intakeFrame.set(0),
+                        intakeRoller.set(0)
+                    )
+                ),
+                () -> goal
+            ))
+            .withName("Set Intake Goal");
+    }
+
+    public Command testArmFromExtendedCommand(){
+        return intakeFrame.runTo(Degrees.of(80), Degrees.of(3));//.andThen(intakeFrame.set(0));
+    }
 
     @Override public void periodic() {
-        // intakeFrame.updateTelemetry();
-        // intakeRoller.updateTelemetry();
+        intakeFrame.updateTelemetry();
+        intakeRoller.updateTelemetry();
     }
 
     @Override

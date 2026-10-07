@@ -73,6 +73,7 @@ public class RobotContainer {
     //this is definietely being called, not an issue
     driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
     driverXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
+    driverXbox.x().onTrue(intake.testArmFromExtendedCommand());
   }
 
   public Command getAutonomousCommand() {
