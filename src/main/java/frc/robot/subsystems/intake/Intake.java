@@ -69,13 +69,18 @@ public class Intake extends SubsystemBase {
                 Map.of(
                     IntakeGoal.INTAKING,
                     Commands.parallel(
-                        intakeFrame.runTo(Degrees.of(90), Degrees.of(5)),
-                        intakeRoller.run(RPM.of(15))
+                        intakeFrame.runTo(Degrees.of(80), Degrees.of(5)).andThen(intakeFrame.set(0))//,
+                        // intakeRoller.run(RPM.of(55))
                     ),
                     IntakeGoal.IDLE,
                     Commands.parallel(
-                        intakeFrame.set(0),
-                        intakeRoller.set(0)
+                        intakeFrame.set(0)//,
+                        // intakeRoller.set(0)
+                    ),
+                    IntakeGoal.STOWED,
+                    Commands.parallel(
+                        intakeFrame.runTo(Degrees.of(10), Degrees.of(2)).andThen(intakeFrame.set(0))//,
+                        // intakeRoller.set(0)
                     )
                 ),
                 () -> goal

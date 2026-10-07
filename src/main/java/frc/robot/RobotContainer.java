@@ -9,6 +9,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.drive.SwerveDriveSubsystem;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.IntakeGoal;
 import frc.robot.subsystems.superstructure.Superstructure;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
 import yams.mechanisms.velocity.FlyWheel;
@@ -73,7 +74,9 @@ public class RobotContainer {
     //this is definietely being called, not an issue
     driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
     driverXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
-    driverXbox.x().onTrue(intake.testArmFromExtendedCommand());
+    driverXbox.povDown().onTrue(intake.setGoalCommand(IntakeGoal.INTAKING));
+    driverXbox.povDown().onFalse(intake.setGoalCommand(IntakeGoal.IDLE));
+    driverXbox.povUp().onTrue(intake.setGoalCommand(IntakeGoal.STOWED));
   }
 
   public Command getAutonomousCommand() {
