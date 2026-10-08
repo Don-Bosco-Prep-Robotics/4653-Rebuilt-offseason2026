@@ -68,9 +68,9 @@ public class Intake extends SubsystemBase {
             .andThen(Commands.select(
                 Map.of(
                     IntakeGoal.INTAKING,
-                    Commands.parallel(
-                        intakeFrame.runTo(Degrees.of(80), Degrees.of(5)).andThen(intakeFrame.set(0))//,
-                        // intakeRoller.run(RPM.of(55))
+                    Commands.sequence(
+                        intakeFrame.runTo(Degrees.of(80), Degrees.of(5)).andThen(intakeFrame.set(0)),
+                        intakeRoller.run(RPM.of(55))
                     ),
                     IntakeGoal.IDLE,
                     Commands.parallel(
