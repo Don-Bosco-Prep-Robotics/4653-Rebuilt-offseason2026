@@ -1,11 +1,15 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import yams.mechanisms.config.ArmConfig;
@@ -38,6 +42,9 @@ public class IntakeFrame extends SubsystemBase {
     }
     public Command set(double dutyCycle){
         return frame.set(dutyCycle);
+    }
+    public Command setEncoder(Angle angle){
+        return Commands.runOnce(()->{frameMotor.setEncoderPosition(angle);}, this);
     }
 
     @Override

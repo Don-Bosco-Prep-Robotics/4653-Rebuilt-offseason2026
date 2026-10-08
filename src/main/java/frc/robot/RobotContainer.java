@@ -17,6 +17,8 @@ import yams.mechanisms.swerve.utility.SwerveInputStream;
 import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.subsystems.shooter.Flywheel;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -63,20 +65,12 @@ public class RobotContainer {
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
     driverXbox.a().onTrue(swerve.zeroGyro());
 
-    // driverXbox
-    //   .b()
-    //     .whileTrue(
-    //       Commands.startEnd(
-    //         () -> superstructure.setGoal(Superstructure.Goal.SCORING),
-    //         () -> superstructure.setGoal(Superstructure.Goal.IDLE),
-    //         superstructure
-    //       ).withName("Start/End Scoring")
-    //   );
-
-    //this is definietely being called, not an issue
     driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
     driverXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
+    driverXbox.y().onTrue(intake.setFrameEncoder(Degrees.of(0)));
+
     driverXbox.povDown().onTrue(intake.setGoalCommand(IntakeGoal.INTAKING));
+    driverXbox.povDown().and(driverXbox.leftTrigger()).onTrue(intake.setGoalCommand(IntakeGoal.OUTTAKING));
     driverXbox.povDown().onFalse(intake.setGoalCommand(IntakeGoal.IDLE));
     driverXbox.povUp().onTrue(intake.setGoalCommand(IntakeGoal.STOWED));
   }

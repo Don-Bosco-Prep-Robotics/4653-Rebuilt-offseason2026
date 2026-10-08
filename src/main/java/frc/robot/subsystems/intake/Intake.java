@@ -8,25 +8,11 @@ import java.util.Map;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.indexer.Indexer.IndexerGoal;
-import frc.robot.subsystems.shooter.Flywheel;
-import yams.mechanisms.config.ArmConfig;
-import yams.mechanisms.config.FlyWheelConfig;
-import yams.mechanisms.positional.Arm;
-import yams.mechanisms.velocity.FlyWheel;
-import yams.motorcontrollers.SmartMotorController;
-import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.local.SparkWrapper;
-import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;;
+
 
 public class Intake extends SubsystemBase {
 
@@ -42,24 +28,29 @@ public class Intake extends SubsystemBase {
     }
 
     public Command setGoalCommand(IntakeGoal goal) {
-        return Commands.runOnce(() -> this.goal = goal)
-            .andThen(Commands.select(
-                Map.of(
-                    IntakeGoal.INTAKING,
-                    Commands.parallel(
-                        frame.runTo(Degrees.of(80), Degrees.of(5)).andThen(frame.set(0)),
-                        rollers.run(RPM.of(55))
-                    ),
-                    IntakeGoal.IDLE,
-                    Commands.parallel(
-                        frame.set(0),
-                        rollers.set(0)
-                    ),
-                    IntakeGoal.STOWED,
-                    Commands.parallel(
-                        frame.runTo(Degrees.of(10), Degrees.of(2)).andThen(frame.set(0)),
-                        rollers.set(0)
-                    )
+            return Commands.runOnce(() -> this.goal = goal)
+                .andThen(Commands.select(
+                    Map.of(
+                        IntakeGoal.INTAKING,
+                        Commands.parallel(
+                            frame.runTo(Degrees.of(84), Degrees.of(2)),//.andThen(frame.set(0)),
+                            rollers.run(RPM.of(230))
+                        ),
+                        IntakeGoal.IDLE,
+                        Commands.parallel(
+                            frame.set(0),
+                            rollers.set(0)
+                        ),
+                        IntakeGoal.STOWED,
+                        Commands.parallel(
+                            frame.runTo(Degrees.of(10), Degrees.of(2)).andThen(frame.set(0)),
+                            rollers.set(0)
+                        ),
+                        IntakeGoal.OUTTAKING,
+                        Commands.parallel(
+                            frame.runTo(Degrees.of(84), Degrees.of(2)),//.andThen(frame.set(0)),
+                            rollers.run(RPM.of(-230))
+                        )
                 ),
                 () -> goal
             ))
@@ -68,6 +59,9 @@ public class Intake extends SubsystemBase {
 
     public Command testArmFromExtendedCommand(){
         return frame.runTo(Degrees.of(80), Degrees.of(3));//.andThen(frame.set(0));
+    }
+    public Command setFrameEncoder(Angle angle){
+       return frame.setEncoder(angle);
     }
 
     @Override public void periodic() {
