@@ -76,7 +76,7 @@ public class RobotContainer {
         intake.setGoalCommand(IntakeGoal.OUTTAKING),
         superstructure.setGoal(Superstructure.Goal.OUTTAKING)
       ));
-    operatorXbox.povDown().onFalse(
+    operatorXbox.povDown().or(operatorXbox.leftTrigger()).onFalse(
       Commands.parallel(
           intake.setGoalCommand(IntakeGoal.IDLE),
           superstructure.setGoal(Goal.IDLE)
