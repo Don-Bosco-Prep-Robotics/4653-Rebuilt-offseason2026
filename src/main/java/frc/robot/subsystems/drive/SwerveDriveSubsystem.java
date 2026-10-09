@@ -49,12 +49,18 @@ public class SwerveDriveSubsystem extends SubsystemBase
         .withTranslationController(new PIDController(4, 0, 0))
         .withRotationController(new PIDController(1, 0, 0))
         .withTelemetry("swerve", new SwerveDriveTelemetryConfig(TelemetryVerbosity.HIGH))
-        .withMaximumChassisSpeed(MetersPerSecond.of(3), DegreesPerSecond.of(360));
+        .withMaximumChassisSpeed(MetersPerSecond.of(4), DegreesPerSecond.of(360));
         // .withGyro(() -> Degrees.of(-gyro.getAngle()));
 
     SwerveParser.parse(new File(Filesystem.getDeployDirectory(), "swerve/base"));
     SwerveDriveDevices devices = SwerveParser.createSwerveDriveDevices(cfg);
     drive = devices.swerveDrive();
+    try {
+      setupPathPlanner();
+    } catch (IOException | ParseException e) {
+      throw new RuntimeException(
+          "PathPlanner setup failed -- check deploy/pathplanner/settings.json exists and is formatted correctly", e);
+    }
      // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
     // You can also create the SwerveDrive without the ability to retrieve the devices like this.
     // drive = SwerveParser.createSwerveDrive(cfg);

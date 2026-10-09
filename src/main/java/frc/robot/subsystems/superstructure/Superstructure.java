@@ -49,6 +49,10 @@ public class Superstructure extends SubsystemBase {
             () -> Commands.parallel(
 
             ).withName("Start Collecting"),
+            Goal.OUTTAKING,
+            () -> Commands.parallel(
+                indexer.setGoalCommand(IndexerGoal.OUTTAKING)
+            ),
             Goal.IDLE,
             () -> Commands.parallel(
                 flywheels.setGoalCommand(FlywheelsGoal.IDLE),

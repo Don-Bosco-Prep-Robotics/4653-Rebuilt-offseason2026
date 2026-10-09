@@ -1,80 +1,71 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import java.util.Map;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
+import org.littletonrobotics.junction.AutoLogOutput;
 
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.indexer.Indexer.IndexerGoal;
-import frc.robot.subsystems.shooter.Flywheel;
-import yams.mechanisms.config.ArmConfig;
-import yams.mechanisms.config.FlyWheelConfig;
-import yams.mechanisms.positional.Arm;
-import yams.mechanisms.velocity.FlyWheel;
-import yams.motorcontrollers.SmartMotorController;
-import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.local.SparkWrapper;
-import frc.robot.Constants.IndexerConstants;
-import frc.robot.Constants.IntakeConstants;;
+
 
 public class Intake extends SubsystemBase {
 
-    private SmartMotorControllerConfig intakeRollerMotorController;
-    private SmartMotorControllerConfig intakeFrameMotorController;
-    private SmartMotorController intakeRollerMotor;
-    private SmartMotorController intakeFrameMotor;
-    private SparkMax intakeRollerSpark;
-    private SparkMax intakeFrameSpark;
-    private ArmConfig intakeFrameConfig;
-    private Arm intakeFrame;
-    private FlyWheelConfig intakeRollerConfig;
-    private FlyWheel intakeRoller;
+    private IntakeFrame frame;
+    private IntakeRollers rollers;
 
-    private IntakeGoal goal = IntakeGoal.STOWED;
+    @AutoLogOutput
+    private IntakeGoal goal;
     
     public Intake(){
-        //Intake Roller
-        // intakeRollerMotorController =IntakeConstants.intakeRollerMotorConfig.withSubsystem(this);
-        // intakeRollerSpark = new SparkMax(IntakeConstants.intakeRollerMotor, MotorType.kBrushless);
-        // intakeRollerMotor = new SparkWrapper(
-        //     intakeRollerSpark,
-        //     DCMotor.getNEO(1), 
-        //     intakeFrameMotorController);
-        // intakeRollerConfig = IntakeConstants.intakeRollerConfig;
-        // intakeRoller = new FlyWheel(intakeRollerConfig, intakeRollerMotor);
+        this.frame = new IntakeFrame();
+        this.rollers = new IntakeRollers();
+    }
 
-        // //Intake Frame
-        // intakeFrameMotorController = IntakeConstants.intakeFrameMotorConfig.withSubsystem(this);
-        // intakeFrameSpark = new SparkMax(IntakeConstants.intakeFrameMotor, MotorType.kBrushless);
-        // intakeFrameMotor = new SparkWrapper(
-        //     intakeFrameSpark,
-        //     DCMotor.getNEO(1),
-        //     intakeFrameMotorController);
-        // intakeFrameConfig = IntakeConstants.intakeFrameConfig;
-        // intakeFrame = new Arm(intakeFrameConfig, intakeFrameMotor);
-    } 
+    public Command setGoalCommand(IntakeGoal goal) {
+            return Commands.runOnce(() -> this.goal = goal)
+                .andThen(Commands.select(
+                    Map.of(
+                        IntakeGoal.INTAKING,
+                        Commands.parallel(
+                            frame.runTo(Degrees.of(84), Degrees.of(2)),//.andThen(frame.set(0)),
+                            rollers.run(RPM.of(230))
+                        ),
+                        IntakeGoal.IDLE,
+                        Commands.parallel(
+                            frame.set(0),
+                            rollers.set(0)
+                        ),
+                        IntakeGoal.STOWED,
+                        Commands.parallel(
+                            frame.runTo(Degrees.of(10), Degrees.of(2)).andThen(frame.set(0)),
+                            rollers.set(0)
+                        ),
+                        IntakeGoal.OUTTAKING,
+                        Commands.parallel(
+                            frame.runTo(Degrees.of(84), Degrees.of(2)),//.andThen(frame.set(0)),
+                            rollers.run(RPM.of(-230))
+                        )
+                ),
+                () -> goal
+            ))
+            .withName("Set Intake Goal");
+    }
 
-    // public Command setGoalCommand(IntakeGoal goal) {
-    //     return Commands.runOnce(() -> this.goal = goal)
-    //     .andThen(Commands.select(
-    //         Map.of(
-    //             IntakeGoal.INTAKING,
-    //             () -> Commands.parallel(
-    //                 intakeFrame.runTo(),
-    //                 intakeRoller.run(RPM.of())
-    //             )),
-    //         () -> goal
-    //         )).withName("Set Indexer Goal");
-    // }
+    public Command testArmFromExtendedCommand(){
+        return frame.runTo(Degrees.of(80), Degrees.of(3));//.andThen(frame.set(0));
+    }
+    public Command setFrameEncoder(Angle angle){
+       return frame.setEncoder(angle);
+    }
 
     @Override public void periodic() {
-        // intakeFrame.updateTelemetry();
-        // intakeRoller.updateTelemetry();
+
     }
 
     @Override

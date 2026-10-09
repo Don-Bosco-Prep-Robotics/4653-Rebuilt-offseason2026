@@ -87,7 +87,7 @@ public final class Constants {
   public static class IndexerConstants {
     public static final int indexerMotor = 20;
 
-    //TODO - Figure out why this isn't turning at all - SOLVED - duplicate CAN ID with the REVPD
+    //TODO - Figure out why this isn't turning at all - SOLVED - duplicate CAN ID with the REVPD/minor typo in the setGoal()
     public static final SmartMotorControllerConfig indexerMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.CLOSED_LOOP)
         .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
@@ -112,11 +112,12 @@ public final class Constants {
         .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withTelemetry("Intake Frame Motor", TelemetryVerbosity.HIGH)
-        .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 3, 3, 1)))
+        .withGearing(new MechanismGearing(GearBox.fromReductionStages(5, 3, 3)))
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40))
-        .withSoftLimits(Degrees.of(0), Degrees.of(90));
+        .withStartingPosition(Degrees.of(0))
+        .withSoftLimits(Degrees.of(-30), Degrees.of(90));
 
     public static final ArmConfig intakeFrameConfig = new ArmConfig()
         .withLength(Inches.of(15))
@@ -127,7 +128,7 @@ public final class Constants {
         .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withTelemetry("Intake Roller Motor", TelemetryVerbosity.HIGH)
-        .withGearing(new MechanismGearing(GearBox.fromReductionStages(1, 1)))
+        .withGearing(new MechanismGearing(GearBox.fromReductionStages(5)))
         .withMotorInverted(false)
         .withIdleMode(MotorMode.COAST)
         .withStatorCurrentLimit(Amps.of(40));
