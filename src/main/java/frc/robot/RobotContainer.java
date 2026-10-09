@@ -13,6 +13,7 @@ import frc.robot.subsystems.intake.IntakeFrame;
 import frc.robot.subsystems.intake.IntakeRollers;
 import frc.robot.subsystems.intake.Intake.IntakeGoal;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.Superstructure.Goal;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
 import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.subsystems.shooter.Flywheel;
@@ -29,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
 
   final CommandXboxController driverXbox = new CommandXboxController(0);
-  
+  final CommandXboxController operatorXbox = new CommandXboxController(1);
 
   private final SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
   private final Intake intake = new Intake();
@@ -65,14 +66,22 @@ public class RobotContainer {
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
     driverXbox.a().onTrue(swerve.zeroGyro());
 
-    driverXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
-    driverXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
-    driverXbox.y().onTrue(intake.setFrameEncoder(Degrees.of(0)));
+    operatorXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
+    operatorXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));
+    operatorXbox.y().onTrue(intake.setFrameEncoder(Degrees.of(0)));
 
-    driverXbox.povDown().onTrue(intake.setGoalCommand(IntakeGoal.INTAKING));
-    driverXbox.povDown().and(driverXbox.leftTrigger()).onTrue(intake.setGoalCommand(IntakeGoal.OUTTAKING));
-    driverXbox.povDown().onFalse(intake.setGoalCommand(IntakeGoal.IDLE));
-    driverXbox.povUp().onTrue(intake.setGoalCommand(IntakeGoal.STOWED));
+    operatorXbox.povDown().onTrue(intake.setGoalCommand(IntakeGoal.INTAKING));
+    operatorXbox.povDown().and(operatorXbox.leftTrigger()).onTrue(
+      Commands.parallel(
+        intake.setGoalCommand(IntakeGoal.OUTTAKING),
+        superstructure.setGoal(Superstructure.Goal.OUTTAKING)
+      ));
+    operatorXbox.povDown().onFalse(
+      Commands.parallel(
+          intake.setGoalCommand(IntakeGoal.IDLE),
+          superstructure.setGoal(Goal.IDLE)
+      ));
+    operatorXbox.povUp().onTrue(intake.setGoalCommand(IntakeGoal.STOWED));
   }
 
   public Command getAutonomousCommand() {

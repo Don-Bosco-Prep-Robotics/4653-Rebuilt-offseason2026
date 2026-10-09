@@ -61,7 +61,10 @@ public class Indexer extends SubsystemBase {
                 IndexerGoal.INDEXING,
                 this.run(IndexerConstants.indexingSpeed),
                 IndexerGoal.IDLE,
-                this.stop()),
+                this.stop(),
+                IndexerGoal.OUTTAKING,
+                this.run(IndexerConstants.indexingSpeed.unaryMinus())
+                ),
             ()->goal
             )).withName("Set Indexer Goal");
     }
@@ -93,6 +96,7 @@ public class Indexer extends SubsystemBase {
 
     public enum IndexerGoal {
         INDEXING,
+        OUTTAKING,
         IDLE
     }
 
