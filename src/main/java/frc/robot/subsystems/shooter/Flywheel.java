@@ -53,9 +53,6 @@ public class Flywheel extends SubsystemBase {
         return shooter.run(speed);}
     public Command stop() {
         return shooter.set(0);}
-    public void shootVoid(){
-        Commands.runOnce(() -> shooter.run(RPM.of(15)));
-    }
 
     public Command set(double dutyCycle) {
         return shooter.set(dutyCycle);

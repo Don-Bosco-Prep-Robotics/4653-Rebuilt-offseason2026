@@ -41,8 +41,8 @@ public class Superstructure extends SubsystemBase {
 
         goalCommands = Map.of(
             Goal.SCORING,
-            () -> Commands.parallel(
-                flywheels.setGoalCommand(FlywheelsGoal.SHOOTING),
+            () -> Commands.sequence(
+                flywheels.setGoalCommand(FlywheelsGoal.SHOOTING).withTimeout(2),
                 indexer.setGoalCommand(IndexerGoal.INDEXING)
             ).withName("Start Scoring"),
             Goal.INTAKING,
