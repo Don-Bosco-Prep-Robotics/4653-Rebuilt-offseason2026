@@ -20,7 +20,9 @@ import frc.robot.subsystems.shooter.Flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -32,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
 
-  private final SendableChooser autoChooser;
+  private final SendableChooser<Command> autoChooser;
 
   final CommandXboxController driverXbox = new CommandXboxController(0);
   final CommandXboxController operatorXbox = new CommandXboxController(1);
@@ -62,6 +64,10 @@ public class RobotContainer {
 
 
   public RobotContainer() {
+
+    NamedCommands.registerCommand("State Shooting", superstructure.setGoal(Goal.SCORING));
+    NamedCommands.registerCommand("State Idle", superstructure.setGoal(Goal.IDLE));
+
     configureBindings();
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -92,6 +98,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Path1");
+    return autoChooser.getSelected();
   }
 }

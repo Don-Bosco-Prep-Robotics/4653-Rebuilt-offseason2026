@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase {
                         IntakeGoal.INTAKING,
                         Commands.parallel(
                             frame.runTo(Degrees.of(84), Degrees.of(2)),//.andThen(frame.set(0)),
-                            rollers.run(RPM.of(230))
+                            rollers.run(RPM.of(1000))//530
                         ),
                         IntakeGoal.IDLE,
                         Commands.parallel(
@@ -49,7 +49,7 @@ public class Intake extends SubsystemBase {
                         IntakeGoal.OUTTAKING,
                         Commands.parallel(
                             frame.runTo(Degrees.of(84), Degrees.of(2)),//.andThen(frame.set(0)),
-                            rollers.run(RPM.of(-230))
+                            rollers.run(RPM.of(-1000))//-530
                         )
                 ),
                 () -> goal
