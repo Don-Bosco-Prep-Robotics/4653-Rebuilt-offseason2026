@@ -85,7 +85,7 @@ public final class Constants {
     //TODO - Figure out why this isn't turning at all - SOLVED - duplicate CAN ID with the REVPD/minor typo in the setGoal()
     public static final SmartMotorControllerConfig indexerMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.CLOSED_LOOP)
-        .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withFeedforward(new SimpleMotorFeedforward(.25, .48, 0))
         .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withTelemetry("Indexer Motor", TelemetryVerbosity.HIGH)
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(4, 1)))

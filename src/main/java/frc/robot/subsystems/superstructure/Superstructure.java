@@ -42,7 +42,7 @@ public class Superstructure extends SubsystemBase {
             () -> Commands.parallel(
                 flywheels.setGoalCommand(FlywheelsGoal.SHOOTING),
                 Commands.sequence(
-                    Commands.waitSeconds(2),
+                    Commands.waitSeconds(1),
                     indexer.setGoalCommand(IndexerGoal.INDEXING)
                 )
             ).withName("Start Scoring"),
