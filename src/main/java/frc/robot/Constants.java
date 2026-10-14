@@ -120,7 +120,7 @@ public final class Constants {
 
     public static final SmartMotorControllerConfig intakeRollerMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.CLOSED_LOOP)
-        .withFeedforward(new SimpleMotorFeedforward(1, 1, 1))
+        .withFeedforward(new SimpleMotorFeedforward(.15, .62, 0))
         .withSimFeedforward(new SimpleMotorFeedforward(1, 1, 1))
         .withTelemetry("Intake Roller Motor", TelemetryVerbosity.HIGH)
         .withGearing(new MechanismGearing(GearBox.fromReductionStages(5)))
