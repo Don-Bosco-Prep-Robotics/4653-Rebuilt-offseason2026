@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
 
 import com.revrobotics.spark.SparkMax;
 

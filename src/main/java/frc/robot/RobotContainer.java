@@ -4,27 +4,20 @@
 
 package frc.robot;
 
-import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.drive.SwerveDriveSubsystem;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeFrame;
-import frc.robot.subsystems.intake.IntakeRollers;
 import frc.robot.subsystems.intake.Intake.IntakeGoal;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.Goal;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
-import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.subsystems.shooter.Flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,11 +58,16 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    NamedCommands.registerCommand("State Shooting", superstructure.setGoal(Goal.SCORING));
-    NamedCommands.registerCommand("State Idle", superstructure.setGoal(Goal.IDLE));
-
+    //Annoyingly, there's no way to run setState(SHOOTING), wait(4), setState(IDLE) because shooting is a continuous command. This works though.
+    NamedCommands.registerCommand(
+        "Auto Shoot",
+        superstructure.setGoal(Goal.SCORING)
+            .withTimeout(3)
+            .andThen(superstructure.setGoal(Goal.IDLE))
+    );
     configureBindings();
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
+    swerve.zeroGyro();
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     // superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));

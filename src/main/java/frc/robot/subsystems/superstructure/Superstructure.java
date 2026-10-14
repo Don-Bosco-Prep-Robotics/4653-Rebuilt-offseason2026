@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,7 +15,6 @@ import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Flywheels;
 import frc.robot.subsystems.shooter.Flywheels.FlywheelsGoal;
 import frc.robot.subsystems.indexer.Indexer.IndexerGoal;
-import yams.mechanisms.velocity.FlyWheel;
 
 public class Superstructure extends SubsystemBase {
 
@@ -41,9 +39,12 @@ public class Superstructure extends SubsystemBase {
 
         goalCommands = Map.of(
             Goal.SCORING,
-            () -> Commands.sequence(
-                flywheels.setGoalCommand(FlywheelsGoal.SHOOTING).withTimeout(2),
-                indexer.setGoalCommand(IndexerGoal.INDEXING)
+            () -> Commands.parallel(
+                flywheels.setGoalCommand(FlywheelsGoal.SHOOTING),
+                Commands.sequence(
+                    Commands.waitSeconds(2),
+                    indexer.setGoalCommand(IndexerGoal.INDEXING)
+                )
             ).withName("Start Scoring"),
             Goal.INTAKING,
             () -> Commands.parallel(
