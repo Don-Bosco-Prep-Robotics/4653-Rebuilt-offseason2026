@@ -65,6 +65,14 @@ public class RobotContainer {
             .withTimeout(5)
             .andThen(superstructure.setGoal(Goal.IDLE))
     );
+    NamedCommands.registerCommand(
+        "Auto Intake", 
+        Commands.sequence(
+          intake.setGoalCommand(IntakeGoal.INTAKING).withTimeout(5),
+          intake.setGoalCommand(IntakeGoal.STOWED).withTimeout(2)
+        )
+    );
+
     configureBindings();
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
     swerve.zeroGyro();

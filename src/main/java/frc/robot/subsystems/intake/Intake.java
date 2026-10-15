@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
     private IntakeRollers rollers;
 
     @AutoLogOutput
-    private IntakeGoal goal;
+    private IntakeGoal goal = IntakeGoal.STOWED;
     
     public Intake(){
         this.frame = new IntakeFrame();
