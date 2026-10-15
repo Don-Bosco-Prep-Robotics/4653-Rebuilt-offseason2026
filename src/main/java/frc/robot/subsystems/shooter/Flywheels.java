@@ -1,6 +1,6 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class Flywheels extends SubsystemBase{
     }
 
     public Command shoot(){
-        return left.run(RotationsPerSecond.of(58.63)).alongWith(right.run(RotationsPerSecond.of(58.63)));
+        return left.run(RPM.of(3006.7)).alongWith(right.run(RPM.of(3006.7)));
     }
     public Command stop(){
         return left.set(0).alongWith(right.set(0));

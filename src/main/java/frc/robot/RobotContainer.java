@@ -4,30 +4,30 @@
 
 package frc.robot;
 
-import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.drive.SwerveDriveSubsystem;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeFrame;
-import frc.robot.subsystems.intake.IntakeRollers;
 import frc.robot.subsystems.intake.Intake.IntakeGoal;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.Goal;
 import yams.mechanisms.swerve.utility.SwerveInputStream;
-import yams.mechanisms.velocity.FlyWheel;
 import frc.robot.subsystems.shooter.Flywheel;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 
 public class RobotContainer {
+
+  private final SendableChooser<Command> autoChooser;
 
   final CommandXboxController driverXbox = new CommandXboxController(0);
   final CommandXboxController operatorXbox = new CommandXboxController(1);
@@ -57,8 +57,19 @@ public class RobotContainer {
 
 
   public RobotContainer() {
+
+    //Annoyingly, there's no way to run setState(SHOOTING), wait(4), setState(IDLE) because shooting is a continuous command. This works though.
+    NamedCommands.registerCommand(
+        "Auto Shoot",
+        superstructure.setGoal(Goal.SCORING)
+            .withTimeout(5)
+            .andThen(superstructure.setGoal(Goal.IDLE))
+    );
     configureBindings();
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
+    swerve.zeroGyro();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     // superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));
   }
 
@@ -85,6 +96,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Path1");
+    return autoChooser.getSelected();
   }
 }
