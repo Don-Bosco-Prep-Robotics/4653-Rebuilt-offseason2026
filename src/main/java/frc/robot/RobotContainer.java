@@ -62,7 +62,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Auto Shoot",
         superstructure.setGoal(Goal.SCORING)
-            .withTimeout(3)
+            .withTimeout(5)
             .andThen(superstructure.setGoal(Goal.IDLE))
     );
     configureBindings();
