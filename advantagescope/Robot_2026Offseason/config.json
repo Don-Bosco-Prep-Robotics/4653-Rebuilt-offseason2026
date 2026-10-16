@@ -8,7 +8,28 @@
       "degrees":90
     }
   ],
-  "position": [0, 0, 0.15],
+  "position": [-0.1, 0.404, 0.175],
   "components": [
+    {
+      "zeroedRotations": [
+        {
+          "axis":"x",
+          "degrees":180
+        },
+        {
+          "axis":"z",
+          "degrees":90
+        },
+        {
+          "axis":"y",
+          "degrees":0
+        }
+      ],
+      "zeroedPosition": [
+        -0.21,
+        0,
+        0.17
+      ]
+    }
   ]
 }
