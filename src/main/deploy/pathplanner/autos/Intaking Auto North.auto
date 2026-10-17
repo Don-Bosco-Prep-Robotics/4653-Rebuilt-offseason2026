@@ -11,9 +11,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Auto Intake"
+            "waitTime": 5.0
           }
         },
         {

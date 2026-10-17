@@ -18,11 +18,14 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
 public class RobotContainer {
@@ -55,6 +58,8 @@ public class RobotContainer {
                 () -> driverXbox.getRightX())
             .withAllianceRelativeControl();
 
+  private final Trigger intakeDown;
+  private final Trigger intakeStow;
 
   public RobotContainer() {
 
@@ -71,6 +76,17 @@ public class RobotContainer {
           intake.setGoalCommand(IntakeGoal.INTAKING).withTimeout(5),
           intake.setGoalCommand(IntakeGoal.STOWED).withTimeout(2)
         )
+    );
+
+    intakeDown = new EventTrigger("Intake Down Trigger").whileTrue(
+      Commands.sequence(
+        intake.setGoalCommand(IntakeGoal.INTAKING)
+      )
+    );
+    intakeStow = new EventTrigger("Intake Stow Trigger").whileTrue(
+      Commands.sequence(
+        intake.setGoalCommand(IntakeGoal.STOWED)
+      )
     );
 
     configureBindings();
