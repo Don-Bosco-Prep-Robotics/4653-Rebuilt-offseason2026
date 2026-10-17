@@ -94,13 +94,14 @@ public class SwerveDriveSubsystem extends SubsystemBase
     DoubleSupplier yInv = () -> -y.getAsDouble();
     DoubleSupplier rotInv = () -> -rot.getAsDouble();
 
-    if(flipped){
-      xInv = () -> x.getAsDouble();
-      yInv = () -> y.getAsDouble();
-      rotInv = () -> -rot.getAsDouble();
-    }
+    // if(flipped){
+    //   xInv = () -> x.getAsDouble();
+    //   yInv = () -> y.getAsDouble();
+    //   rotInv = () -> -rot.getAsDouble();
+    // }
 
     return new SwerveInputStream(drive, xInv, yInv, rotInv)
+    .withDeadband(0.05)
     .withMaximumLinearVelocity(MetersPerSecond.of(5))
     .withMaximumAngularVelocity(DegreesPerSecond.of(360));
   }
@@ -109,6 +110,9 @@ public class SwerveDriveSubsystem extends SubsystemBase
   {
     return drive.drive(() -> ChassisSpeeds.fromFieldRelativeSpeeds(stream.get(), new Rotation2d(drive.getGyroAngle())));
     // return drive.drive(stream);
+  }
+  public Command driveFieldRelative(SwerveInputStream stream){
+    return run(() -> drive.setFieldRelativeChassisSpeeds(stream.get())).withName("Drive Field Relative");
   }
 
   /** Zero the gyro heading. Bind this to a button combo for field recovery. */
