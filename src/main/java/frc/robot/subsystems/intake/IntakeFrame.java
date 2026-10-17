@@ -3,9 +3,14 @@ package frc.robot.subsystems.intake;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -62,6 +67,14 @@ public class IntakeFrame extends SubsystemBase {
     @Override
     public void periodic(){
         frame.updateTelemetry();
+        Logger.recordOutput("ZeroedComponentIntakePose", new Pose3d[] {new Pose3d()});
+        Logger.recordOutput("IntakeComponentFrameFinalPoses", 
+        new Pose3d[] {
+            new Pose3d(
+                0,0,0, new Rotation3d(0,-frame.getAngle().in(Radians),0)
+            )
+        }
+        );
         frameLigament.setAngle(frame.getAngle().in(Degrees) + 90);
     }
 

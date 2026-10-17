@@ -40,12 +40,12 @@ public class SwerveDriveSubsystem extends SubsystemBase
   {
     SmartDashboard.putData(this);
     var cfg = new SwerveDriveConfig()
-        .withStartingPose(new Pose2d(3, 3, Rotation2d.kZero))
+        .withStartingPose(Pose2d.kZero)
         .withSubsystem(this)
         .withTranslationController(new PIDController(4, 0, 0))
         .withRotationController(new PIDController(1, 0, 0))
         .withTelemetry("swerve", new SwerveDriveTelemetryConfig(TelemetryVerbosity.HIGH))
-        .withMaximumChassisSpeed(MetersPerSecond.of(4), DegreesPerSecond.of(360));
+        .withMaximumChassisSpeed(MetersPerSecond.of(6), DegreesPerSecond.of(360));
         // .withGyro(() -> Degrees.of(-gyro.getAngle()));
 
     SwerveParser.parse(new File(Filesystem.getDeployDirectory(), "swerve/base"));

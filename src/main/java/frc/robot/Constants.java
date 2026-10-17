@@ -34,8 +34,6 @@ public final class Constants {
   }
   public static class ShooterConstants {
 
-    //TODO - Figure out why the livetuning doesn't appear to make a difference
-    //TODO - Figure out why the flyWheelLeft Values are showing up as 1 on the tuner
     //LEFT FLYWHEEL
     public static final int flywheelLeftMotor = 14;
     public static final SmartMotorControllerConfig flywheelLeftMotorConfig = new SmartMotorControllerConfig()
@@ -82,7 +80,6 @@ public final class Constants {
   public static class IndexerConstants {
     public static final int indexerMotor = 20;
 
-    //TODO - Figure out why this isn't turning at all - SOLVED - duplicate CAN ID with the REVPD/minor typo in the setGoal()
     public static final SmartMotorControllerConfig indexerMotorConfig = new SmartMotorControllerConfig()
         .withControlMode(ControlMode.CLOSED_LOOP)
         .withFeedforward(new SimpleMotorFeedforward(.25, .48, 0))
