@@ -45,7 +45,7 @@
     "rotation": 32.00538320808354
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Basic Preload Autos",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

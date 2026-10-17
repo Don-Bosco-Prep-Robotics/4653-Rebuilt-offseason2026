@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 5.5
+        "x": 2.8128833333333336,
+        "y": 5.161191666666666
       },
       "prevControl": {
-        "x": 3.029083333333333,
-        "y": 5.129641666666668
+        "x": 3.3419666666666665,
+        "y": 4.790833333333334
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -44.39690880561947
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Basic Preload Autos",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

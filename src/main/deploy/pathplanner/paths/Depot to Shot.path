@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2,
-        "y": 6.0
+        "x": 0.60585,
+        "y": 5.9699333333333335
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.200000000000001,
-        "y": 6.0
+        "x": 1.605850000000001,
+        "y": 5.9699333333333335
       },
       "isLocked": false,
       "linkedName": "Depot Intake"
     },
     {
       "anchor": {
-        "x": 2.5,
-        "y": 5.5
+        "x": 2.8128833333333336,
+        "y": 5.161191666666666
       },
       "prevControl": {
-        "x": 1.5,
-        "y": 5.5
+        "x": 1.8128833333333336,
+        "y": 5.161191666666666
       },
       "nextControl": null,
       "isLocked": false,
