@@ -91,7 +91,6 @@ public class RobotContainer {
 
     configureBindings();
     swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
-    swerve.zeroGyro();
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     // superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));

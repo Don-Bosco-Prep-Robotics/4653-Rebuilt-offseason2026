@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.412291666666667,
-        "y": 4.057675
+        "x": 2.295852926641343,
+        "y": 4.006348890148839
       },
       "isLocked": false,
       "linkedName": "Hub Start Pose"
     },
     {
       "anchor": {
-        "x": 2.8128833333333336,
-        "y": 5.161191666666666
+        "x": 1.664016666666667,
+        "y": 4.005
       },
       "prevControl": {
-        "x": 3.3419666666666665,
-        "y": 4.790833333333334
+        "x": 3.006546725405679,
+        "y": 3.9833464032662
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "North Shot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -44.39690880561947
+    "rotation": -0.9086093289129052
   },
   "reversed": false,
   "folder": "Basic Preload Autos",
