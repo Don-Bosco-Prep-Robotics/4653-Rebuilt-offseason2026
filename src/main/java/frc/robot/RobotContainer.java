@@ -55,8 +55,8 @@ public class RobotContainer {
       swerve.getAngularVelocityStream(
                 driverXbox::getLeftY,
                 driverXbox::getLeftX,
-                () -> driverXbox.getRightX())
-            .withAllianceRelativeControl();
+                () -> driverXbox.getRightX());
+            // .withAllianceRelativeControl();
 
   private final Trigger intakeDown;
   private final Trigger intakeStow;
@@ -90,8 +90,7 @@ public class RobotContainer {
     );
 
     configureBindings();
-    swerve.setDefaultCommand(swerve.drive(driveAngularVelocity));
-    swerve.zeroGyro();
+    swerve.setDefaultCommand(swerve.driveFieldRelative(driveAngularVelocity));
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     // superstructure.setDefaultCommand(superstructure.setGoal(Superstructure.Goal.IDLE));

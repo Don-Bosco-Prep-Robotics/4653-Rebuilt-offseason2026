@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Simple Spline"
+            "pathName": "Hub to Depot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to Shot"
           }
         },
         {
@@ -19,7 +31,7 @@
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

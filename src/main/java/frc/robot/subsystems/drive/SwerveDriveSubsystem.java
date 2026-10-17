@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,12 +46,13 @@ public class SwerveDriveSubsystem extends SubsystemBase
         .withTranslationController(new PIDController(4, 0, 0))
         .withRotationController(new PIDController(1, 0, 0))
         .withTelemetry("swerve", new SwerveDriveTelemetryConfig(TelemetryVerbosity.HIGH))
-        .withMaximumChassisSpeed(MetersPerSecond.of(6), DegreesPerSecond.of(360));
+        .withMaximumChassisSpeed(MetersPerSecond.of(10), DegreesPerSecond.of(360));
         // .withGyro(() -> Degrees.of(-gyro.getAngle()));
 
     SwerveParser.parse(new File(Filesystem.getDeployDirectory(), "swerve/base"));
     SwerveDriveDevices devices = SwerveParser.createSwerveDriveDevices(cfg);
     drive = devices.swerveDrive();
+
     try {
       setupPathPlanner();
     } catch (IOException | ParseException e) {
@@ -85,31 +87,32 @@ public class SwerveDriveSubsystem extends SubsystemBase
 
   public SwerveInputStream getAngularVelocityStream(DoubleSupplier x, DoubleSupplier y,
                                                     DoubleSupplier rot) {
+
+
+    boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
     DoubleSupplier xInv = () -> -x.getAsDouble();
     DoubleSupplier yInv = () -> -y.getAsDouble();
     DoubleSupplier rotInv = () -> -rot.getAsDouble();
 
+    // if(flipped){
+    //   xInv = () -> x.getAsDouble();
+    //   yInv = () -> y.getAsDouble();
+    //   rotInv = () -> -rot.getAsDouble();
+    // }
+
     return new SwerveInputStream(drive, xInv, yInv, rotInv)
-    .withMaximumLinearVelocity(MetersPerSecond.of(3))
+    .withDeadband(0.05)
+    .withMaximumLinearVelocity(MetersPerSecond.of(5))
     .withMaximumAngularVelocity(DegreesPerSecond.of(360));
   }
 
   public Command drive(SwerveInputStream stream)
   {
-    return drive.drive(() -> ChassisSpeeds.fromFieldRelativeSpeeds(stream.get(),
-                                                                   new Rotation2d(drive.getGyroAngle())));
-    // return drive.drive(() -> {
-    //     ChassisSpeeds speeds = stream.get();
-
-    //     SmartDashboard.putNumber("Swerve/vx", speeds.vxMetersPerSecond);
-    //     SmartDashboard.putNumber("Swerve/vy", speeds.vyMetersPerSecond);
-    //     SmartDashboard.putNumber("Swerve/omega", speeds.omegaRadiansPerSecond);
-
-    //     return ChassisSpeeds.fromFieldRelativeSpeeds(
-    //         speeds,
-    //         new Rotation2d(drive.getGyroAngle())
-    //     );
-    // });
+    return drive.drive(() -> ChassisSpeeds.fromFieldRelativeSpeeds(stream.get(), new Rotation2d(drive.getGyroAngle())));
+    // return drive.drive(stream);
+  }
+  public Command driveFieldRelative(SwerveInputStream stream){
+    return run(() -> drive.setFieldRelativeChassisSpeeds(stream.get())).withName("Drive Field Relative");
   }
 
   /** Zero the gyro heading. Bind this to a button combo for field recovery. */
