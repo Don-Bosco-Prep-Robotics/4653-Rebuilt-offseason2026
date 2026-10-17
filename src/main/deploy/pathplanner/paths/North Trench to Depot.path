@@ -12,7 +12,7 @@
         "y": 6.558339029575732
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "North Trench"
     },
     {
       "anchor": {
@@ -52,7 +52,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Intaking Auto North",
+  "folder": "Intaking Auto Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.661716666666667,
-        "y": 5.5239916666666655
+        "x": 2.5,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 1.661716666666667,
-        "y": 5.5239916666666655
+        "x": 1.5,
+        "y": 5.5
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "North Shot"
     }
   ],
   "rotationTargets": [],
@@ -52,7 +52,7 @@
     "rotation": -44.39690880561947
   },
   "reversed": false,
-  "folder": "Intaking Auto North",
+  "folder": "Intaking Auto Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

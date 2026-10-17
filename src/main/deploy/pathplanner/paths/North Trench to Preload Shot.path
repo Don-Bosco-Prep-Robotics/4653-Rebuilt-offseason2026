@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.515808333333333,
-        "y": 7.421133333333334
+        "x": 3.4,
+        "y": 6.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.515808333333335,
-        "y": 7.421133333333334
+        "x": 3.0265374756191914,
+        "y": 5.586322369724268
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "North Trench"
     },
     {
       "anchor": {
-        "x": 2.223333333333333,
-        "y": 5.493758333333333
+        "x": 2.5,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 1.2233333333333332,
-        "y": 5.493758333333333
+        "x": 2.4371604709754013,
+        "y": 5.741973539032611
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "North Shot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -38.04704253182614
+    "rotation": -44.39690880561947
   },
   "reversed": false,
   "folder": null,
