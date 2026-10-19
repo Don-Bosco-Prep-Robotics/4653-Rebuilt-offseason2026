@@ -113,6 +113,7 @@ public final class Constants {
 
     public static final ArmConfig intakeFrameConfig = new ArmConfig()
         .withLength(Inches.of(15))
+        .withHardLimits(Degrees.of(0), Degrees.of(90))
         .withTelemetry("Intake Frame", TelemetryVerbosity.HIGH);
 
     public static final SmartMotorControllerConfig intakeRollerMotorConfig = new SmartMotorControllerConfig()
