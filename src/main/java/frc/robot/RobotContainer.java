@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
@@ -90,6 +91,7 @@ public class RobotContainer {
     );
 
     configureBindings();
+    RobotModeTriggers.test().whileTrue(Commands.idle(swerve).withName("Live Tuning"));
     swerve.setDefaultCommand(swerve.driveFieldRelative(driveAngularVelocity));
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -99,6 +101,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Zero the gyro with Start + Back — use this if the field-relative heading drifts
     driverXbox.a().onTrue(swerve.zeroGyro());
+    driverXbox.b().whileTrue(swerve.tuningDrive());
 
     operatorXbox.b().onTrue(superstructure.setGoal(Superstructure.Goal.SCORING));
     operatorXbox.b().onFalse(superstructure.setGoal(Superstructure.Goal.IDLE));

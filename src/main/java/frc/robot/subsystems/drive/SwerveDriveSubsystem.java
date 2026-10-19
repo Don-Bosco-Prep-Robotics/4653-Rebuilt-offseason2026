@@ -1,7 +1,9 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +48,7 @@ public class SwerveDriveSubsystem extends SubsystemBase
         .withTranslationController(new PIDController(4, 0, 0))
         .withRotationController(new PIDController(1, 0, 0))
         .withTelemetry("swerve", new SwerveDriveTelemetryConfig(TelemetryVerbosity.HIGH))
-        .withMaximumChassisSpeed(MetersPerSecond.of(10), DegreesPerSecond.of(360));
+        .withMaximumChassisSpeed(MetersPerSecond.of(4), DegreesPerSecond.of(360));
         // .withGyro(() -> Degrees.of(-gyro.getAngle()));
 
     SwerveParser.parse(new File(Filesystem.getDeployDirectory(), "swerve/base"));
@@ -102,7 +104,7 @@ public class SwerveDriveSubsystem extends SubsystemBase
 
     return new SwerveInputStream(drive, xInv, yInv, rotInv)
     .withDeadband(0.05)
-    .withMaximumLinearVelocity(MetersPerSecond.of(5))
+    .withMaximumLinearVelocity(MetersPerSecond.of(4))
     .withMaximumAngularVelocity(DegreesPerSecond.of(360));
   }
 
@@ -113,6 +115,15 @@ public class SwerveDriveSubsystem extends SubsystemBase
   }
   public Command driveFieldRelative(SwerveInputStream stream){
     return run(() -> drive.setFieldRelativeChassisSpeeds(stream.get())).withName("Drive Field Relative");
+  }
+  public Command tuningDrive(){
+    return run(() -> drive.setRobotRelativeChassisSpeeds(
+      new ChassisSpeeds(
+        MetersPerSecond.of(1), 
+        MetersPerSecond.of(0), 
+        RotationsPerSecond.of(0)
+      )
+    ));
   }
 
   /** Zero the gyro heading. Bind this to a button combo for field recovery. */
