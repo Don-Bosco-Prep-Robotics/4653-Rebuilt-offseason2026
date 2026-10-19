@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
+import javax.sound.sampled.Control;
+
 import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -26,6 +28,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.LoggedTunableNumber;
+import frc.robot.utils.TunableControls;
+import frc.robot.utils.TunableControls.ControlConstants;
+import frc.robot.utils.TunableControls.TunableControlConstants;
 import swervelib.parser.SwerveParser;
 import swervelib.parser.SwerveParser.SwerveDriveDevices;
 import yams.mechanisms.config.SwerveDriveConfig;
@@ -38,6 +44,12 @@ public class SwerveDriveSubsystem extends SubsystemBase
 {
 
   private SwerveDrive drive;  
+  private LoggedTunableNumber translationP = new LoggedTunableNumber("/swerve/translation/P", 4);
+  private LoggedTunableNumber translationI = new LoggedTunableNumber("/swerve/translation/I", 0);
+  private LoggedTunableNumber translationD = new LoggedTunableNumber("/swerve/translation/D", 0);
+  private LoggedTunableNumber rotationP = new LoggedTunableNumber("/swerve/rotation/P", 4);
+  private LoggedTunableNumber rotationI = new LoggedTunableNumber("/swerve/rotation/I", 0);
+  private LoggedTunableNumber rotationD = new LoggedTunableNumber("/swerve/rotation/D", 0);
 
   public SwerveDriveSubsystem()
   {
@@ -45,8 +57,13 @@ public class SwerveDriveSubsystem extends SubsystemBase
     var cfg = new SwerveDriveConfig()
         .withStartingPose(Pose2d.kZero)
         .withSubsystem(this)
-        .withTranslationController(new PIDController(4, 0, 0))
-        .withRotationController(new PIDController(1, 0, 0))
+        .withTranslationController(new PIDController(translationP.getAsDouble(), translationI.getAsDouble(), translationD.getAsDouble()))
+        .withRotationController(new PIDController(rotationP.getAsDouble(), rotationI.getAsDouble(), rotationD.getAsDouble()))
+        // .withTranslationController(
+        //   new TunableControls.TunablePIDController(
+        //     new TunableControlConstants(
+        //       getName(),
+        //       new ControlConstants().withPID(4, 0, 0))))
         .withTelemetry("swerve", new SwerveDriveTelemetryConfig(TelemetryVerbosity.HIGH))
         .withMaximumChassisSpeed(MetersPerSecond.of(4), DegreesPerSecond.of(360));
         // .withGyro(() -> Degrees.of(-gyro.getAngle()));
@@ -135,6 +152,12 @@ public class SwerveDriveSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     drive.updateTelemetry();
+    if(translationP.hasChanged(translationP.hashCode()) || translationD.hasChanged(translationD.hashCode()) || translationI.hasChanged(translationI.hashCode())
+      || rotationP.hasChanged(rotationP.hashCode()) || rotationI.hasChanged(rotationI.hashCode()) || rotationD.hasChanged(rotationD.hashCode())
+    ){
+      drive.setTranslationPID(new PIDController(translationP.getAsDouble(), translationI.getAsDouble(), translationD.getAsDouble()));
+      drive.setRotationPID(new PIDController(rotationP.getAsDouble(), rotationI.getAsDouble(), rotationD.getAsDouble()));
+    }
   }
 
   @Override
